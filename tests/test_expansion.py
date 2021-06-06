@@ -25,7 +25,8 @@ def test_expansion_generate_sph_basis():
     assert np.all(result[1][0] == np.sqrt(3 / 4 / np.pi) * np.cos(theta)[:,None])
     assert np.all(result[1][1] == -np.sqrt(3 / 2 / np.pi) / 2 * np.sin(theta)[:,None] * np.exp(1j * phi))
     assert np.all(result[2][0] == approx(np.sqrt(5 / np.pi) / 4 * (3 * np.cos(theta)[:,None]**2 - 1)))
-    assert np.all(result[2][1] == approx(-np.sqrt(15 / 2 / np.pi) / 2 * (np.sin(theta) * np.cos(theta))[:,None] * np.exp(1j * phi)))
+    assert np.all(result[2][1] == \
+            approx(-np.sqrt(15 / 2 / np.pi) / 2 * (np.sin(theta) * np.cos(theta))[:,None] * np.exp(1j * phi)))
     assert np.all(result[2][2] == approx(np.sqrt(15 / 2 / np.pi) / 4 * np.sin(theta)[:,None]**2 * np.exp(2j * phi)))
 
 def test_expansion_from_data_constant():
