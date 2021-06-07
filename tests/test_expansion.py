@@ -44,7 +44,7 @@ def test_expansion_from_data_constant():
     assert expansion.coeffs[1][1] == approx(0)
     assert expansion.coeffs[1][2] == approx(0)
 
-def test_expansion_from_data_Y_2_1():
+def test_expansion_from_data_y21():
     """Spherical harmonics expansion of data only containing the second degree first order sperical harmonic"""
     size_phi = 200
     size_theta = 100
