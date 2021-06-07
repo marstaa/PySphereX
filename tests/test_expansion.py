@@ -10,6 +10,7 @@ Authors:
 import numpy as np
 from pytest import approx
 from pyspherex import Expansion
+import pyspherex.calculus
 
 
 def test_expansion_generate_sph_basis():
@@ -72,3 +73,18 @@ def test_expansion_call_sine():
     expansion = Expansion.from_data(phi, theta, data, 10)
 
     assert np.all(data == approx(expansion(phi, theta, 10), rel=1e-1))
+
+def test_expansion_spectrum_power():
+    """Test that sum over power spectrum gives total power"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+    degree_max = 20
+
+    data = -4 / np.pi**2 * (np.repeat(theta[:,None], size_phi, axis=1) - np.pi / 2)**2 + 1
+    expansion = Expansion.from_data(phi, theta, data, degree_max)
+    power = pyspherex.calculus.sph_integrate(phi, theta, data**2) / 4 / np.pi
+
+    assert np.sum(expansion.spectrum) == approx(power, rel=1e-3)
+    assert expansion.power == approx(power, rel=1e-3)

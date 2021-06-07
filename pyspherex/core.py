@@ -107,3 +107,13 @@ class Expansion:
                     result += coeff * basis[degree][order]
 
         return result
+
+    @property
+    def spectrum(self):
+        """Calculate power spectrum."""
+        return np.array([np.sum(np.abs(coeffs)**2) / 4 / np.pi for coeffs in self.coeffs])
+
+    @property
+    def power(self):
+        """Calculate total power"""
+        return np.sum(self.spectrum)
