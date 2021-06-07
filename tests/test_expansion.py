@@ -42,3 +42,21 @@ def test_expansion_from_data_constant():
     assert expansion.coeffs[0][0] == approx(np.sqrt(4 * np.pi))
     assert expansion.coeffs[1][0] == approx(0)
     assert expansion.coeffs[1][1] == approx(0)
+    assert expansion.coeffs[1][2] == approx(0)
+
+def test_expansion_from_data_Y_2_1():
+    """Spherical harmonics expansion of data only containing the second degree first order sperical harmonic"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+
+    data = -np.sqrt(15 / 2 / np.pi) / 2 * (np.sin(theta) * np.cos(theta))[:,None] * np.exp(1j * phi)
+    expansion = Expansion.from_data(phi, theta, data, 3)
+
+    for degree in range(len(expansion.coeffs)):
+        for order, coeff in zip(range(-degree, degree + 1), expansion.coeffs[degree]):
+            if degree == 2 and order == 1:
+                assert coeff == approx(1, rel=1e-3)
+            else:
+                assert coeff == approx(0)
