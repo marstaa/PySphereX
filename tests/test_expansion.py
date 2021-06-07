@@ -60,3 +60,15 @@ def test_expansion_from_data_Y_2_1():
                 assert coeff == approx(1, rel=1e-3)
             else:
                 assert coeff == approx(0)
+
+def test_expansion_call_sine():
+    """Test `__call__` for Spherical harmonics expansion"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+
+    data = np.sin(theta[:,None]) * np.sin(phi)
+    expansion = Expansion.from_data(phi, theta, data, 10)
+
+    assert np.all(data == approx(expansion(phi, theta, 10), rel=1e-1))

@@ -97,7 +97,7 @@ class Expansion:
                               'of the expansion ({len(self.coeffs) - 1})')
 
         basis = self.generate_sph_basis(phi, theta, degree_max)
-        result = 0
+        result = np.zeros((theta.size, phi.size), dtype=np.complex128)
 
         for degree in range(degree_max + 1):
             for order, coeff in zip(range(-degree, degree + 1), self.coeffs[degree]):
