@@ -117,3 +117,14 @@ class Expansion:
     def power(self):
         """Calculate total power"""
         return np.sum(self.spectrum)
+
+    def normalize(self):
+        """Normalize spherical harmonics expansion"""
+        coeffs_norm = []
+        factor = np.sqrt(self.power * 4 * np.pi)
+
+        for degree in range(len(self.coeffs)):
+            coeffs_norm.append([])
+            for coeff in self.coeffs[degree]:
+                coeffs_norm[degree].append(coeff / factor)
+        return Expansion(coeffs_norm)

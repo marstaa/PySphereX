@@ -84,7 +84,25 @@ def test_expansion_spectrum_power():
 
     data = -4 / np.pi**2 * (np.repeat(theta[:,None], size_phi, axis=1) - np.pi / 2)**2 + 1
     expansion = Expansion.from_data(phi, theta, data, degree_max)
-    power = pyspherex.calculus.sph_integrate(phi, theta, data**2) / 4 / np.pi
+    power = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2) / 4 / np.pi
 
     assert np.sum(expansion.spectrum) == approx(power, rel=1e-3)
     assert expansion.power == approx(power, rel=1e-3)
+
+def test_expansion_normalize():
+    """Test normalization of spherical harmonics expansion"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+    degree_max = 10
+
+    coeffs = [[np.random.normal() + 1j * np.random.normal()
+        for order in range(2 * degree + 1)]
+        for degree in range(degree_max + 1)]
+
+    expansion = Expansion(coeffs).normalize()
+    data = expansion(phi, theta, degree_max)
+    integral = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2)
+
+    assert integral == approx(1, rel=1e-3)
