@@ -37,9 +37,9 @@ class Expansion:
 
         for degree in range(degree_max + 1):
             coeffs.append([])
-            for order in range(-degree, degree+1):
+            for order in range(-degree, degree + 1):
                 if order < 0:
-                    coeff = sph_integrate(phi, theta, data * basis[degree][-order])
+                    coeff = sph_integrate(phi, theta, data * (-1)**order * basis[degree][-order])
                 elif order >= 0:
                     coeff = sph_integrate(phi, theta, data * np.conj(basis[degree][order]))
                 coeffs[degree].append(coeff)
@@ -82,3 +82,49 @@ class Expansion:
                     harmonics[degree].append(tmp * legendre[degree][order][:,None] * np.exp(1j * order * phi))
 
         return harmonics
+
+    def __call__(self, phi, theta, degree_max):
+        """Evaluate spherical harmonics expansion at given points.
+
+        Args:
+            phi: array of azimuthal angles
+            theta: array of polar angles
+            degree_max: maximum degree
+        """
+
+        if degree_max > len(self.coeffs) - 1:
+            raise ValueError(f'degree_max ({degree_max}) must not exceed the degree '
+                              'of the expansion ({len(self.coeffs) - 1})')
+
+        basis = self.generate_sph_basis(phi, theta, degree_max)
+        result = np.zeros((theta.size, phi.size), dtype=np.complex128)
+
+        for degree in range(degree_max + 1):
+            for order, coeff in zip(range(-degree, degree + 1), self.coeffs[degree]):
+                if order < 0:
+                    result += coeff * (-1)**order * np.conj(basis[degree][-order])
+                elif order >= 0:
+                    result += coeff * basis[degree][order]
+
+        return result
+
+    @property
+    def spectrum(self):
+        """Calculate power spectrum."""
+        return np.array([np.sum(np.abs(coeffs)**2) / 4 / np.pi for coeffs in self.coeffs])
+
+    @property
+    def power(self):
+        """Calculate total power"""
+        return np.sum(self.spectrum)
+
+    def normalize(self):
+        """Normalize spherical harmonics expansion"""
+        coeffs_norm = []
+        factor = np.sqrt(self.power * 4 * np.pi)
+
+        for degree in range(len(self.coeffs)):
+            coeffs_norm.append([])
+            for coeff in self.coeffs[degree]:
+                coeffs_norm[degree].append(coeff / factor)
+        return Expansion(coeffs_norm)

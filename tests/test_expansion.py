@@ -10,6 +10,7 @@ Authors:
 import numpy as np
 from pytest import approx
 from pyspherex import Expansion
+import pyspherex.calculus
 
 
 def test_expansion_generate_sph_basis():
@@ -42,3 +43,66 @@ def test_expansion_from_data_constant():
     assert expansion.coeffs[0][0] == approx(np.sqrt(4 * np.pi))
     assert expansion.coeffs[1][0] == approx(0)
     assert expansion.coeffs[1][1] == approx(0)
+    assert expansion.coeffs[1][2] == approx(0)
+
+def test_expansion_from_data_y21():
+    """Spherical harmonics expansion of data only containing the second degree first order sperical harmonic"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+
+    data = -np.sqrt(15 / 2 / np.pi) / 2 * (np.sin(theta) * np.cos(theta))[:,None] * np.exp(1j * phi)
+    expansion = Expansion.from_data(phi, theta, data, 3)
+
+    for degree in range(len(expansion.coeffs)):
+        for order, coeff in zip(range(-degree, degree + 1), expansion.coeffs[degree]):
+            if degree == 2 and order == 1:
+                assert coeff == approx(1, rel=1e-3)
+            else:
+                assert coeff == approx(0)
+
+def test_expansion_call_sine():
+    """Test `__call__` for Spherical harmonics expansion"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+
+    data = np.sin(theta[:,None]) * np.sin(phi)
+    expansion = Expansion.from_data(phi, theta, data, 10)
+
+    assert np.all(data == approx(expansion(phi, theta, 10), rel=1e-1))
+
+def test_expansion_spectrum_power():
+    """Test that sum over power spectrum gives total power"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+    degree_max = 20
+
+    data = -4 / np.pi**2 * (np.repeat(theta[:,None], size_phi, axis=1) - np.pi / 2)**2 + 1
+    expansion = Expansion.from_data(phi, theta, data, degree_max)
+    power = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2) / 4 / np.pi
+
+    assert np.sum(expansion.spectrum) == approx(power, rel=1e-3)
+    assert expansion.power == approx(power, rel=1e-3)
+
+def test_expansion_normalize():
+    """Test normalization of spherical harmonics expansion"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+    degree_max = 10
+
+    coeffs = [[np.random.normal() + 1j * np.random.normal()
+        for order in range(2 * degree + 1)]
+        for degree in range(degree_max + 1)]
+
+    expansion = Expansion(coeffs).normalize()
+    data = expansion(phi, theta, degree_max)
+    integral = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2)
+
+    assert integral == approx(1, rel=1e-3)
