@@ -134,3 +134,20 @@ class Expansion:
 
     def __neq__(self, other):
         return not self.__eq__(other)
+
+    def __add__(self, other):
+        if len(self.coeffs) > len(other.coeffs):
+            high, low = self, other
+        else:
+            high, low = other, self
+
+        coeffs_new = []
+        for degree in range(len(high.coeffs)):
+            coeffs_new.append([])
+            if degree < len(low.coeffs):
+                for coeff_high, coeff_low in zip(high.coeffs[degree], low.coeffs[degree]):
+                    coeffs_new[degree].append(coeff_high + coeff_low)
+            else:
+                for coeff_high in high.coeffs[degree]:
+                    coeffs_new[degree].append(coeff_high)
+        return Expansion(coeffs_new)

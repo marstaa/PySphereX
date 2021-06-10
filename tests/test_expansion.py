@@ -120,3 +120,17 @@ def test_expansion_neq():
     exp2 = Expansion([[1.2], [2.3, 3.4, 4.6]])
 
     assert exp1 != exp2
+
+def test_expansion_add():
+    """Test `+` operator"""
+    exp1 = Expansion([[1], [2, 3, 4]])
+    exp2 = Expansion([[5], [6, 7, 8]])
+    res = Expansion([[6], [8, 10, 12]])
+
+    assert exp1 + exp2 == res
+
+    exp1 = Expansion([[1], [2, 3, 4]])
+    exp2 = Expansion([[5]])
+    res = Expansion([[6], [2, 3, 4]])
+
+    assert exp1 + exp2 == res
