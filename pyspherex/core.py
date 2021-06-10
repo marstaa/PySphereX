@@ -94,7 +94,7 @@ class Expansion:
 
         if degree_max > len(self.coeffs) - 1:
             raise ValueError(f'degree_max ({degree_max}) must not exceed the degree '
-                              'of the expansion ({len(self.coeffs) - 1})')
+                             f'of the expansion ({len(self.coeffs) - 1})')
 
         basis = self.generate_sph_basis(phi, theta, degree_max)
         result = np.zeros((theta.size, phi.size), dtype=np.complex128)
