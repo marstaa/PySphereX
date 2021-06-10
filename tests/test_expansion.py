@@ -106,3 +106,17 @@ def test_expansion_normalize():
     integral = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2)
 
     assert integral == approx(1, rel=1e-3)
+
+def test_expansion_eq():
+    """Test `==` operator"""
+    exp1 = Expansion([[1.2], [2.3, 3.4, 4.5]])
+    exp2 = Expansion([[1.2], [2.3, 3.4, 4.5]])
+
+    assert exp1 == exp2
+
+def test_expansion_neq():
+    """Test `!=` operator"""
+    exp1 = Expansion([[1.2], [2.3, 3.4, 4.5]])
+    exp2 = Expansion([[1.2], [2.3, 3.4, 4.6]])
+
+    assert exp1 != exp2

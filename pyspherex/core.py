@@ -128,3 +128,9 @@ class Expansion:
             for coeff in self.coeffs[degree]:
                 coeffs_norm[degree].append(coeff / factor)
         return Expansion(coeffs_norm)
+
+    def __eq__(self, other):
+        return self.coeffs == other.coeffs
+
+    def __neq__(self, other):
+        return not self.__eq__(other)
