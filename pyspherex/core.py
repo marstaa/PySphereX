@@ -151,3 +151,17 @@ class Expansion:
                 for coeff_high in high.coeffs[degree]:
                     coeffs_new[degree].append(coeff_high)
         return Expansion(coeffs_new)
+
+    def __sub__(self, other):
+        return self + (-other)
+
+    def __rmul__(self, factor):
+        coeffs_new = []
+        for degree in range(len(self.coeffs)):
+            coeffs_new.append([])
+            for coeff in self.coeffs[degree]:
+                coeffs_new[degree].append(factor * coeff)
+        return Expansion(coeffs_new)
+
+    def __neg__(self):
+        return -1 * self

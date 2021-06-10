@@ -134,3 +134,31 @@ def test_expansion_add():
     res = Expansion([[6], [2, 3, 4]])
 
     assert exp1 + exp2 == res
+
+def test_expansion_sub():
+    """Test `-` operator"""
+    exp1 = Expansion([[1], [2, 3, 4]])
+    exp2 = Expansion([[5], [6, 7, 8]])
+    res = Expansion([[-4], [-4, -4, -4]])
+
+    assert exp1 - exp2 == res
+
+    exp1 = Expansion([[1], [2, 3, 4]])
+    exp2 = Expansion([[5]])
+    res = Expansion([[-4], [2, 3, 4]])
+
+    assert exp1 - exp2 == res
+
+def test_expansion_rmul():
+    """Test `*` operator"""
+    exp = Expansion([[1], [2, 3, 4]])
+    res = Expansion([[2], [4, 6, 8]])
+
+    assert 2 * exp == res
+
+def test_expansion_neg():
+    """Test `*` operator"""
+    exp = Expansion([[1], [2, 3, 4]])
+    res = Expansion([[-1], [-2, -3, -4]])
+
+    assert -exp == res
