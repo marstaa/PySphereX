@@ -20,6 +20,20 @@ class Expansion:
         Args:
             coeffs: coefficients of spherical harmonics expansion
         """
+        if isinstance(coeffs, list):
+            for degree, orders in enumerate(coeffs):
+                if isinstance(orders, list):
+                    if not len(orders) == 2 * degree + 1:
+                        raise ValueError(f'`coeffs[{degree}]` must be of length'
+                                         f'{2 * degree + 1}, (is {len(coeffs[degree])})')
+                else:
+                    raise TypeError(f'`{coeffs[{degree}]} must be a list`')
+                for coeff in orders:
+                    if not isinstance(coeff, (int, float, complex)):
+                        print(coeff)
+                        raise TypeError(f'`coeffs[{degree}] must only contain integers or complex floats`')
+        else:
+            raise TypeError('`coeffs` must be a list')
         self.coeffs = coeffs
 
     @classmethod

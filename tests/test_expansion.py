@@ -8,10 +8,30 @@ Authors:
 """
 
 import numpy as np
-from pytest import approx
+from pytest import approx, raises
 from pyspherex import Expansion
 import pyspherex.calculus
 
+
+def test_expansion_init():
+    """Test constructor"""
+    exp = Expansion([[1.2], [2.3, 3.4, 4.5]])
+    assert exp.coeffs[0][0] == 1.2
+    assert exp.coeffs[1][0] == 2.3
+    assert exp.coeffs[1][1] == 3.4
+    assert exp.coeffs[1][2] == 4.5
+
+    with raises(TypeError):
+        Expansion(([1.2]))
+
+    with raises(TypeError):
+        Expansion([(1.2)])
+
+    with raises(ValueError):
+        Expansion([[1.2], [2.3, 3.4]])
+
+    with raises(TypeError):
+        Expansion([["foo"]])
 
 def test_expansion_generate_sph_basis():
     """Check `Expansion.generate_sph_basis` against hard coded equivalent."""
