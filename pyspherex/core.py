@@ -170,3 +170,21 @@ class Expansion:
             res += sum(coeff1 * coeff2.conjugate()
                 for coeff1, coeff2 in zip(self.coeffs[degree], other.coeffs[degree]))
         return res
+
+    def __len__(self):
+        if self.coeffs:
+            return max(self.coeffs.keys()) + 1
+        return 0
+
+    def __getitem__(self, key):
+        if isinstance(key, list):
+            coeffs_new = {}
+            for degree in key:
+                if degree in self.coeffs:
+                    coeffs_new[degree] = self.coeffs[degree].copy()
+            return Expansion(coeffs_new)
+        if isinstance(key, int):
+            return self[[key]]
+        if isinstance(key, slice):
+            return self[list(range(*key.indices(len(self.coeffs))))]
+        raise TypeError('`key` must be an index, a slice or a list of integers')
