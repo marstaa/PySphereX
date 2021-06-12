@@ -179,3 +179,12 @@ class Expansion:
 
     def __neg__(self):
         return -1 * self
+
+    def __matmul__(self, other):
+        """Calculate overlap integral between two expansions"""
+        res = 0
+        degree_min = min(len(self.coeffs), len(other.coeffs))
+        for orders1, orders2 in zip(self.coeffs[:degree_min], other.coeffs[:degree_min]):
+            for coeff1, coeff2 in zip(orders1, orders2):
+                res += coeff1 * coeff2.conjugate()
+        return res

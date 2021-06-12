@@ -182,3 +182,19 @@ def test_expansion_neg():
     res = Expansion([[-1], [-2, -3, -4]])
 
     assert -exp == res
+
+def test_expansion_matmul():
+    """Test overlap integral"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+    degree_max = 10
+
+    data1 = np.sin(theta[:,None]) * np.sin(phi)
+    exp1 = Expansion.from_data(phi, theta, data1, degree_max)
+
+    data2 = np.sin(theta[:,None]) * np.exp(1j * phi)
+    exp2 = Expansion.from_data(phi, theta, data2, degree_max)
+    res = -4j * np.pi / 3
+    assert exp1 @ exp2 == approx(res, rel=1e-2)
