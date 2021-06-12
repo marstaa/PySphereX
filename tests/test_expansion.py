@@ -104,9 +104,11 @@ def test_expansion_spectrum_power():
 
     data = -4 / np.pi**2 * (np.repeat(theta[:,None], size_phi, axis=1) - np.pi / 2)**2 + 1
     expansion = Expansion.from_data(phi, theta, data, degree_max)
+    degrees, spectrum = expansion.spectrum
     power = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2) / 4 / np.pi
 
-    assert np.sum(expansion.spectrum) == approx(power, rel=1e-3)
+    assert np.all(degrees == np.arange(degree_max + 1))
+    assert np.sum(spectrum) == approx(power, rel=1e-3)
     assert expansion.power == approx(power, rel=1e-3)
 
 def test_expansion_normalize():

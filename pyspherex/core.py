@@ -119,12 +119,15 @@ class Expansion:
     @property
     def spectrum(self):
         """Calculate power spectrum."""
-        return np.array([np.sum(np.abs(coeffs)**2) / 4 / np.pi for coeffs in self.coeffs.values()])
+        degrees = np.array(list(self.coeffs.keys()))
+        powers = np.array([np.sum(np.abs(orders)**2) / 4 / np.pi
+            for orders in self.coeffs.values()])
+        return degrees, powers
 
     @property
     def power(self):
         """Calculate total power"""
-        return np.sum(self.spectrum)
+        return np.sum(self.spectrum[1])
 
     def normalize(self):
         """Normalize spherical harmonics expansion"""
