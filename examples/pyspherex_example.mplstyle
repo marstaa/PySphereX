@@ -1,0 +1,7 @@
+text.usetex : True
+font.family : serif
+font.size : 10
+text.latex.preamble : \usepackage{amsmath}\usepackage{siunitx}\sisetup{detect-all}
+xtick.direction : inout
+ytick.direction : inout
+axes.titlesize  : 10
