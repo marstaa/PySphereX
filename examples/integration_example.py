@@ -1,14 +1,11 @@
 #! /usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause
 # -*- coding: utf-8 -*-
-#--------------------------------------
-#-- prosku, 2021-08
-#--------------------------------------
 """
 Usage example for the spherical harmonics expansion in the PySphereX package
 
 Authors:
-    Martin Staab <martin.staab@aei.mpg.de>
+    prosku, 2021-08
 """
 
 #Load packages
