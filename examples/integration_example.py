@@ -1,30 +1,44 @@
-#######################################################
-# Spherical harmonics
-# Example for the PySphereX package
-# 2021 06 11
-# author: prosku
-# License? #TODO
-#######################################################
+#! /usr/bin/env python3
+# SPDX-License-Identifier: BSD-3-Clause
+# -*- coding: utf-8 -*-
+#--------------------------------------
+#-- prosku, 2021-08
+#--------------------------------------
+"""
+Usage example for the spherical harmonics expansion in the PySphereX package
+
+Authors:
+    Martin Staab <martin.staab@aei.mpg.de>
+"""
 
 #Load packages
 
 import numpy as np
-import matplotlib as matplotlib
-matplotlib.use('Agg') # https://stackoverflow.com/questions/37604289/tkinter-tclerror-no-display-name-and-no-display-environment-variable
-import matplotlib.pyplot as plt
 
+# Read in netCDF data
 from netCDF4 import Dataset
+
+# Plotting
+import matplotlib
+import matplotlib.pyplot as plt
 
 #PySphereX
 from pyspherex import Expansion
-import pyspherex.calculus
 
 plt.style.use('pyspherex_example.mplstyle')
-var = 'IWP'
-unit = '\SI{}{\g \per \square \meter}'
-degree_max = 20
+DATA_PATH = 'example_data/IWP_non-meaningful-data.nc'
+VAR_NAME = 'IWP' # variable name
+VAR_UNIT = r'\SI{}{\g \per \square \meter}' # unit of that variable
+DEGREE_MAX = 20
 
-def plot_sph_harm(var, unit, data):
+def plot_sph_harm(var, unit, data, degree_max):
+    """Plot data, spherical harmonics expansion of data and power spectrum.
+
+    Args:
+        var: variable name of the field to be plotted, must be present in the input data
+        unit: unit of that variable as string
+        data: netcdf data that contains the input field
+    """
     data=data[var][0,:,:]
     result = Expansion.from_data(phi, theta, data, degree_max)
 
@@ -33,16 +47,14 @@ def plot_sph_harm(var, unit, data):
     fig = plt.figure(figsize=(3.27,3.27*2))
     plt.subplots_adjust(0,0,1,1)
 
-    vmin=np.nanmin([data,data_sh])
-    vmax=np.nanmax([data,data_sh])
-    vext = np.nanmax([np.abs(vmin), np.abs(vmax)])/2 # make colors stronger
+    vext = np.nanmax([np.abs(np.nanmin([data,data_sh])), np.abs(np.nanmax([data,data_sh]))])/2 # make colors stronger
     ax1 = fig.add_subplot(311)
-    # https://stackoverflow.com/questions/33942233/how-do-i-change-matplotlibs-subplot-projection-of-an-existing-axis
 
     if not np.any(data < 0):
-        im = ax1.pcolormesh(lons, lats, data, cmap='RdBu_r', norm=matplotlib.colors.LogNorm(vmin=np.nanmin(data), vmax=np.nanmax(data)))
+        image = ax1.pcolormesh(lons, lats, data, cmap='RdBu_r',
+                norm=matplotlib.colors.LogNorm(vmin=np.nanmin(data), vmax=np.nanmax(data)))
     else:
-        im = ax1.pcolormesh(lons, lats, data, cmap='RdBu_r', vmin=-vext, vmax=vext)
+        image = ax1.pcolormesh(lons, lats, data, cmap='RdBu_r', vmin=-vext, vmax=vext)
     # axis labels
     ax1.set_xlabel(r'Longitude')
     ax1.set_ylabel(r'Latitude')
@@ -50,33 +62,34 @@ def plot_sph_harm(var, unit, data):
 
     ax2 = fig.add_subplot(312)
     if not np.any(data < 0):
-        im = ax2.pcolormesh(lons, lats, data_sh, cmap='RdBu_r', norm=matplotlib.colors.LogNorm(vmin=np.nanmin(data), vmax=np.nanmax(data)))
+        image = ax2.pcolormesh(lons, lats, data_sh, cmap='RdBu_r',
+                norm=matplotlib.colors.LogNorm(vmin=np.nanmin(data), vmax=np.nanmax(data)))
     else:
-        im = ax2.pcolormesh(lons, lats, data_sh, cmap='RdBu_r', vmin=-vext, vmax=vext)
+        image = ax2.pcolormesh(lons, lats, data_sh, cmap='RdBu_r', vmin=-vext, vmax=vext)
 
     # axis labels
     ax2.set_xlabel(r'Longitude')
     ax2.set_ylabel(r'Latitude')
     ax2.set_yticks([-60,-30,0,30,60])
-    fig.colorbar(im, ax=[ax1, ax2], label=var+' ('+unit+')', shrink=0.8, anchor=(2.5,0.5))
+    fig.colorbar(image, ax=[ax1, ax2], label=var+' ('+unit+')', shrink=0.8, anchor=(2.5,0.5))
 
     ax1.set_title('Data')
     ax2.set_title('Reconstructed')
 
     spec2 = np.zeros((len(result.coeffs)))
-    for l in result.coeffs:
-        spec2[l] = np.abs(result.coeffs[l][l])**2 / 4 / np.pi
+    for degree in result.coeffs:
+        spec2[degree] = np.abs(result.coeffs[degree][degree])**2 / 4 / np.pi
     ax = fig.add_subplot(313)
     ax.plot(result.spectrum[0], result.spectrum[1]**(1/2), label='all $m$', color='black')
     ax.plot(result.spectrum[0], spec2**(1/2), label='$m=0$ only', color='grey')
     ax.set_yscale('log')
     ax.set_xlabel('$l$')
-    ax.set_ylabel('$\sqrt{S_{ff}}$')
+    ax.set_ylabel(r'$\sqrt{S_{ff}}$')
     ax.legend()
 
     # Set spacing between plots
     plt.subplots_adjust(hspace=0.5)
-    
+
     plt.savefig('geogr_'+var+'.pdf', bbox_inches='tight')
     plt.close()
 
@@ -84,10 +97,9 @@ if __name__ == '__main__':
     lons = np.load('example_data/lons.npy')
     lats = np.load('example_data/lats.npy')
 
-    phi, theta = lons / 180 * np.pi, - lats / 180 * np.pi + np.pi / 2
+    phi, theta = lons / 180 * np.pi, -1* lats / 180 * np.pi + np.pi / 2
     dphi, dtheta = 1.875 * 180 / np.pi, 1.875 * 180 / np.pi
 
-    data = Dataset('example_data/IWP_non-meaningful-data.nc')
+    data_input = Dataset(DATA_PATH)
 
-    plot_sph_harm(var, unit, data)
-
+    plot_sph_harm(VAR_NAME, VAR_UNIT, data_input, DEGREE_MAX)

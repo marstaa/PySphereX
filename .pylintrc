@@ -3,7 +3,7 @@
 [BASIC]
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,x,y
+good-names=i,j,x,y,ax
 
 [FORMAT]
 
