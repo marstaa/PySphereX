@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Unit tests
+name: Integration example
 
 on:
   push:
@@ -31,7 +31,10 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run integration example
       run: |
-        python examples/integration-example.py
+        cd examples
+        python integration_example.py
+    - name: Upload plots
+      uses: actions/upload-artifact@v2
       with:
         name: geogr_IWP
         path: geogr_IWP.pdf
