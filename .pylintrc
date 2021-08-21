@@ -1,5 +1,7 @@
 [MASTER]
 
+extension-pkg-whitelist=netCDF4
+
 [BASIC]
 
 # Good variable names which should always be accepted, separated by a comma
