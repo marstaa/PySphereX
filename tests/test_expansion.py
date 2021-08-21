@@ -75,8 +75,8 @@ def test_expansion_from_data_y21():
     data = -np.sqrt(15 / 2 / np.pi) / 2 * (np.sin(theta) * np.cos(theta))[:,None] * np.exp(1j * phi)
     expansion = Expansion.from_data(phi, theta, data, 3)
 
-    for degree in range(len(expansion.coeffs)):
-        for order, coeff in zip(range(-degree, degree + 1), expansion.coeffs[degree]):
+    for degree, orders in expansion.coeffs.items():
+        for order, coeff in zip(range(-degree, degree + 1), orders):
             if degree == 2 and order == 1:
                 assert coeff == approx(1, rel=1e-3)
             else:
