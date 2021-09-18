@@ -8,10 +8,30 @@ Authors:
 """
 
 import numpy as np
-from pytest import approx
+from pytest import approx, raises
 from pyspherex import Expansion
 import pyspherex.calculus
 
+
+def test_expansion_init():
+    """Test constructor"""
+    exp = Expansion({0: [1.2], 1: [2.3, 3.4, 4.5]})
+    assert exp.coeffs[0][0] == 1.2
+    assert exp.coeffs[1][0] == 2.3
+    assert exp.coeffs[1][1] == 3.4
+    assert exp.coeffs[1][2] == 4.5
+
+    with raises(TypeError):
+        Expansion(([1.2]))
+
+    with raises(TypeError):
+        Expansion([(1.2)])
+
+    with raises(ValueError):
+        Expansion({0: [1.2], 1: [2.3, 3.4]})
+
+    with raises(TypeError):
+        Expansion({0: ["foo"]})
 
 def test_expansion_generate_sph_basis():
     """Check `Expansion.generate_sph_basis` against hard coded equivalent."""
@@ -55,8 +75,8 @@ def test_expansion_from_data_y21():
     data = -np.sqrt(15 / 2 / np.pi) / 2 * (np.sin(theta) * np.cos(theta))[:,None] * np.exp(1j * phi)
     expansion = Expansion.from_data(phi, theta, data, 3)
 
-    for degree in range(len(expansion.coeffs)):
-        for order, coeff in zip(range(-degree, degree + 1), expansion.coeffs[degree]):
+    for degree, orders in expansion.coeffs.items():
+        for order, coeff in zip(range(-degree, degree + 1), orders):
             if degree == 2 and order == 1:
                 assert coeff == approx(1, rel=1e-3)
             else:
@@ -72,7 +92,7 @@ def test_expansion_call_sine():
     data = np.sin(theta[:,None]) * np.sin(phi)
     expansion = Expansion.from_data(phi, theta, data, 10)
 
-    assert np.all(data == approx(expansion(phi, theta, 10), rel=1e-1))
+    assert np.all(data == approx(expansion(phi, theta), rel=1e-1))
 
 def test_expansion_spectrum_power():
     """Test that sum over power spectrum gives total power"""
@@ -84,12 +104,14 @@ def test_expansion_spectrum_power():
 
     data = -4 / np.pi**2 * (np.repeat(theta[:,None], size_phi, axis=1) - np.pi / 2)**2 + 1
     expansion = Expansion.from_data(phi, theta, data, degree_max)
+    degrees, spectrum = expansion.spectrum
     power = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2) / 4 / np.pi
 
-    assert np.sum(expansion.spectrum) == approx(power, rel=1e-3)
+    assert np.all(degrees == np.arange(degree_max + 1))
+    assert np.sum(spectrum) == approx(power, rel=1e-3)
     assert expansion.power == approx(power, rel=1e-3)
 
-def test_expansion_normalize():
+def test_expansion_normalized():
     """Test normalization of spherical harmonics expansion"""
     size_phi = 200
     size_theta = 100
@@ -97,12 +119,86 @@ def test_expansion_normalize():
     theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
     degree_max = 10
 
-    coeffs = [[np.random.normal() + 1j * np.random.normal()
+    coeffs = {degree: [np.random.normal() + 1j * np.random.normal()
         for order in range(2 * degree + 1)]
-        for degree in range(degree_max + 1)]
+        for degree in range(degree_max + 1)}
 
-    expansion = Expansion(coeffs).normalize()
-    data = expansion(phi, theta, degree_max)
+    expansion = Expansion(coeffs).normalized()
+    data = expansion(phi, theta)
     integral = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2)
 
     assert integral == approx(1, rel=1e-3)
+
+def test_expansion_eq():
+    """Test `==` operator"""
+    exp1 = Expansion({0: [1.2], 1: [2.3, 3.4, 4.5]})
+    exp2 = Expansion({0: [1.2], 1: [2.3, 3.4, 4.5]})
+
+    assert exp1 == exp2
+
+def test_expansion_neq():
+    """Test `!=` operator"""
+    exp1 = Expansion({0: [1.2], 1: [2.3, 3.4, 4.5]})
+    exp2 = Expansion({0: [1.2], 1: [2.3, 3.4, 4.6]})
+
+    assert exp1 != exp2
+
+def test_expansion_add():
+    """Test `+` operator"""
+    exp1 = Expansion({0: [1], 1: [2, 3, 4]})
+    exp2 = Expansion({0: [5], 1: [6, 7, 8]})
+    res = Expansion({0: [6], 1: [8, 10, 12]})
+
+    print(exp1.coeffs, exp2.coeffs, (exp1 + exp2).coeffs)
+
+    assert exp1 + exp2 == res
+
+    exp1 = Expansion({0: [1], 1: [2, 3, 4]})
+    exp2 = Expansion({0: [5]})
+    res = Expansion({0: [6], 1: [2, 3, 4]})
+
+    assert exp1 + exp2 == res
+
+def test_expansion_sub():
+    """Test `-` operator"""
+    exp1 = Expansion({0: [1], 1: [2, 3, 4]})
+    exp2 = Expansion({0: [5], 1: [6, 7, 8]})
+    res = Expansion({0: [-4], 1: [-4, -4, -4]})
+
+    assert exp1 - exp2 == res
+
+    exp1 = Expansion({0: [1], 1: [2, 3, 4]})
+    exp2 = Expansion({0: [5]})
+    res = Expansion({0: [-4], 1: [2, 3, 4]})
+
+    assert exp1 - exp2 == res
+
+def test_expansion_rmul():
+    """Test `*` operator"""
+    exp = Expansion({0: [1], 1: [2, 3, 4]})
+    res = Expansion({0: [2], 1: [4, 6, 8]})
+
+    assert 2 * exp == res
+
+def test_expansion_neg():
+    """Test `*` operator"""
+    exp = Expansion({0: [1], 1: [2, 3, 4]})
+    res = Expansion({0: [-1], 1: [-2, -3, -4]})
+
+    assert -exp == res
+
+def test_expansion_matmul():
+    """Test overlap integral"""
+    size_phi = 200
+    size_theta = 100
+    phi = np.arange(size_phi) * 2 * np.pi / size_phi
+    theta = np.linspace(0, np.pi, size_theta + 2)[1:-1]
+    degree_max = 10
+
+    data1 = np.sin(theta[:,None]) * np.sin(phi)
+    exp1 = Expansion.from_data(phi, theta, data1, degree_max)
+
+    data2 = np.sin(theta[:,None]) * np.exp(1j * phi)
+    exp2 = Expansion.from_data(phi, theta, data2, degree_max)
+    res = -4j * np.pi / 3
+    assert exp1 @ exp2 == approx(res, rel=1e-2)
