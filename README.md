@@ -1,7 +1,11 @@
 # PySphereX
 
-PySphereX is a Python tool to perform spherical harmonics expansion of data given on a uniformly spaced grid on a sphere. Features:
- * describe features here...
+PySphereX is a Python tool to perform spherical harmonics expansion of data given on a uniformly spaced grid on a sphere. Its features include:
+ * `Expansion` class that defines an arbitrary complex spherical harmonics expansion
+ * Convenience constructor `Expansion.from_data` that initializes `Expansion` object of gridded data on a sphere up to a maximum degree
+ * Evaluation of `Expansion` object at arbitrary coordinates
+ * Angular power spectrum
+ * Algebraic operations: Addition, subtraction and overlap between to `Expansion` objects
 
 ## Getting Started
 
