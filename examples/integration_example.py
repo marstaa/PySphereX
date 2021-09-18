@@ -22,10 +22,9 @@ import matplotlib.pyplot as plt
 #PySphereX
 from pyspherex import Expansion
 
-plt.style.use('pyspherex_example.mplstyle')
 DATA_PATH = 'example_data/IWP_non-meaningful-data.nc'
 VAR_NAME = 'IWP' # variable name
-VAR_UNIT = r'\SI{}{\g \per \square \meter}' # unit of that variable
+VAR_UNIT = 'g/m²' # unit of that variable
 DEGREE_MAX = 20
 
 def plot_sph_harm(var, unit, data, degree_max):
@@ -77,11 +76,11 @@ def plot_sph_harm(var, unit, data, degree_max):
     for degree in result.coeffs:
         spec2[degree] = np.abs(result.coeffs[degree][degree])**2 / 4 / np.pi
     ax = fig.add_subplot(313)
-    ax.plot(result.spectrum[0], result.spectrum[1]**(1/2), label='all $m$', color='black')
-    ax.plot(result.spectrum[0], spec2**(1/2), label='$m=0$ only', color='grey')
+    ax.plot(result.spectrum[0], result.spectrum[1]**(1/2), label='all orders', color='black')
+    ax.plot(result.spectrum[0], spec2**(1/2), label='order zero only', color='grey')
     ax.set_yscale('log')
-    ax.set_xlabel('$l$')
-    ax.set_ylabel(r'$\sqrt{S_{ff}}$')
+    ax.set_xlabel('degree')
+    ax.set_ylabel(r'Angular amplitude spectrum')
     ax.legend()
 
     # Set spacing between plots
