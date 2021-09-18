@@ -37,4 +37,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: geogr_IWP
-        path: geogr_IWP.pdf
+        path: examples/geogr_IWP.pdf
