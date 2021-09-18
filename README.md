@@ -52,6 +52,9 @@ pylint */**.py
 pytest
 ```
 
+## How to cite
+TODO
+
 ## Contact
 
 * Martin Staab (martin.staab@aei.mpg.de)
