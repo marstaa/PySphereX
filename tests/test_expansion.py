@@ -111,7 +111,7 @@ def test_expansion_spectrum_power():
     assert np.sum(spectrum) == approx(power, rel=1e-3)
     assert expansion.power == approx(power, rel=1e-3)
 
-def test_expansion_normalize():
+def test_expansion_normalized():
     """Test normalization of spherical harmonics expansion"""
     size_phi = 200
     size_theta = 100
@@ -123,7 +123,7 @@ def test_expansion_normalize():
         for order in range(2 * degree + 1)]
         for degree in range(degree_max + 1)}
 
-    expansion = Expansion(coeffs).normalize()
+    expansion = Expansion(coeffs).normalized()
     data = expansion(phi, theta)
     integral = pyspherex.calculus.sph_integrate(phi, theta, np.abs(data)**2)
 
