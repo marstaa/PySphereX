@@ -202,3 +202,39 @@ def test_expansion_matmul():
     exp2 = Expansion.from_data(phi, theta, data2, degree_max)
     res = -4j * np.pi / 3
     assert exp1 @ exp2 == approx(res, rel=1e-2)
+
+def test_expansion_len():
+    """Test length of expansion"""
+    exp = Expansion({})
+    assert len(exp) == 0
+
+    exp = Expansion({0: [1], 1: [2, 3, 4]})
+    assert len(exp) == 2
+
+def test_expansion_slice():
+    """Test slicing of expansion"""
+    degree_max = 10
+    coeffs = {degree: [np.random.normal() + 1j * np.random.normal()
+        for order in range(2 * degree + 1)]
+        for degree in range(degree_max + 1)}
+    exp = Expansion(coeffs)
+
+    sliced = exp[0]
+    assert len(sliced) == 1
+    assert sliced.coeffs[0] == coeffs[0]
+
+    sliced = exp[1:5]
+    assert len(sliced) == 5
+
+    sliced = exp[1:-1]
+    assert len(sliced) == degree_max
+
+    sliced = exp[1:]
+    assert len(sliced) == degree_max + 1
+
+    sliced = exp[1:9:2]
+    assert len(sliced) == 8
+    assert 1 in sliced.coeffs
+    assert 3 in sliced.coeffs
+    assert 5 in sliced.coeffs
+    assert 7 in sliced.coeffs
