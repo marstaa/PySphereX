@@ -93,7 +93,7 @@ if __name__ == '__main__':
     lons = np.load('example_data/lons.npy')
     lats = np.load('example_data/lats.npy')
 
-    phi, theta = lons / 180 * np.pi, -1* lats / 180 * np.pi + np.pi / 2
+    phi, theta = lons / 180 * np.pi, -lats / 180 * np.pi + np.pi / 2
     dphi, dtheta = 1.875 * 180 / np.pi, 1.875 * 180 / np.pi
 
     data_input = Dataset(DATA_PATH)
