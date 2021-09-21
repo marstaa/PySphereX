@@ -5,7 +5,7 @@
 Usage example for the spherical harmonics expansion in the PySphereX package
 
 Authors:
-    prosku, 2021-08
+    Ulrike Proske <ulrike.proske@env.ethz.ch>, 2021-08
 """
 
 #Load packages
@@ -27,7 +27,7 @@ VAR_NAME = 'IWP' # variable name
 VAR_UNIT = 'g/m²' # unit of that variable
 DEGREE_MAX = 20
 
-def plot_sph_harm(var, unit, data, degree_max):
+def plot_sph_harm(var, unit, data, degree_max, lons, lats):
     """Plot data, spherical harmonics expansion of data and power spectrum.
 
     Args:
@@ -36,6 +36,11 @@ def plot_sph_harm(var, unit, data, degree_max):
         data: netcdf data that contains the input field
     """
     data=data[var][0,:,:]
+
+    # convert longitudes and latitudes to angles
+    phi, theta = lons / 180 * np.pi, -lats / 180 * np.pi + np.pi / 2
+    dphi, dtheta = 1.875 * 180 / np.pi, 1.875 * 180 / np.pi
+
     result = Expansion.from_data(phi, theta, data, degree_max)
 
     data_sh = np.real(result(phi, theta))
@@ -48,7 +53,8 @@ def plot_sph_harm(var, unit, data, degree_max):
 
     if not np.any(data < 0):
         image = ax1.pcolormesh(lons, lats, data, cmap='RdBu_r',
-                norm=matplotlib.colors.LogNorm(vmin=np.nanmin(data), vmax=np.nanmax(data)))
+                norm=matplotlib.colors.LogNorm(vmin=np.nanmin(data), vmax=np.nanmax(data)),
+                shading='auto')
     else:
         image = ax1.pcolormesh(lons, lats, data, cmap='RdBu_r', vmin=-vext, vmax=vext)
     # axis labels
@@ -59,7 +65,8 @@ def plot_sph_harm(var, unit, data, degree_max):
     ax2 = fig.add_subplot(312)
     if not np.any(data < 0):
         image = ax2.pcolormesh(lons, lats, data_sh, cmap='RdBu_r',
-                norm=matplotlib.colors.LogNorm(vmin=np.nanmin(data), vmax=np.nanmax(data)))
+                norm=matplotlib.colors.LogNorm(vmin=np.nanmin(data), vmax=np.nanmax(data)),
+                shading='auto')
     else:
         image = ax2.pcolormesh(lons, lats, data_sh, cmap='RdBu_r', vmin=-vext, vmax=vext)
 
@@ -91,12 +98,9 @@ def plot_sph_harm(var, unit, data, degree_max):
     plt.close()
 
 if __name__ == '__main__':
-    lons = np.load('example_data/lons.npy')
-    lats = np.load('example_data/lats.npy')
-
-    phi, theta = lons / 180 * np.pi, -lats / 180 * np.pi + np.pi / 2
-    dphi, dtheta = 1.875 * 180 / np.pi, 1.875 * 180 / np.pi
+    longitudes = np.load('example_data/lons.npy')
+    latitudes = np.load('example_data/lats.npy')
 
     data_input = Dataset(DATA_PATH)
 
-    plot_sph_harm(VAR_NAME, VAR_UNIT, data_input, DEGREE_MAX)
+    plot_sph_harm(VAR_NAME, VAR_UNIT, data_input, DEGREE_MAX, longitudes, latitudes)
