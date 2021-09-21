@@ -27,6 +27,7 @@ VAR_NAME = 'IWP' # variable name
 VAR_UNIT = 'g/m²' # unit of that variable
 DEGREE_MAX = 20
 
+# pylint: disable=too-many-arguments, too-many-locals
 def plot_sph_harm(var, unit, data, degree_max, lons, lats):
     """Plot data, spherical harmonics expansion of data and power spectrum.
 
@@ -39,7 +40,6 @@ def plot_sph_harm(var, unit, data, degree_max, lons, lats):
 
     # convert longitudes and latitudes to angles
     phi, theta = lons / 180 * np.pi, -lats / 180 * np.pi + np.pi / 2
-    dphi, dtheta = 1.875 * 180 / np.pi, 1.875 * 180 / np.pi
 
     result = Expansion.from_data(phi, theta, data, degree_max)
 
