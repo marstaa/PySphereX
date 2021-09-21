@@ -76,7 +76,8 @@ def plot_sph_harm(var, unit, data, degree_max):
     for degree in result.coeffs:
         spec2[degree] = np.abs(result.coeffs[degree][degree])**2 / 4 / np.pi
     ax = fig.add_subplot(313)
-    ax.plot(result.spectrum[0], result.spectrum[1]**(1/2), label='all orders', color='black')
+    degs, spec = result.spectrum
+    ax.plot(degs, np.sqrt(spec), label='all orders', color='black')
     ax.plot(result.spectrum[0], spec2**(1/2), label='order zero only', color='grey')
     ax.set_yscale('log')
     ax.set_xlabel('degree')
