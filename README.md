@@ -60,7 +60,7 @@ If you intend to use this package in your own research please be sure to cite it
     title = {PySphereX},
     howpublished = {\url{http://github.com/marstaa/PySphereX}},
     year = {2021},
-    DOI={}
+    DOI={<insert DOI from Zenodo>}
 }
 ```
 
