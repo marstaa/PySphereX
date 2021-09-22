@@ -2,19 +2,18 @@
 
 PySphereX is a Python tool to perform spherical harmonics expansion of data given on a uniformly spaced grid on a sphere. Its features include:
  * `Expansion` class that defines an arbitrary complex spherical harmonics expansion
- * Convenience constructor `Expansion.from_data` that initializes `Expansion` object of gridded data on a sphere up to a maximum degree
+ * Convenience constructor `Expansion.from_data` that initializes `Expansion` object from gridded data on a sphere up to a maximum degree
  * Evaluation of `Expansion` object at arbitrary coordinates
  * Angular power spectrum
- * Algebraic operations: Addition, subtraction and overlap between to `Expansion` objects
+ * Algebraic operations: Addition, subtraction and overlap between two `Expansion` objects
 
 ## Getting Started
 
 Make sure that Python 3.7 or newer is available and install `pyspherex` using [pip](https://pypi.org/project/pip/),
 ```
-pip install git+https://github.com/marstaa/PySphereX
+pip install pyspherex
 ```
-
-Include easy first example...
+As a "getting started guide" we provide an example (in folder `examples/`) that shows the basic functionalities of this package. For further information see the doc-strings and the unit tests.
 
 ## Contributing
 
@@ -34,6 +33,7 @@ python -m venv venv
 source ./venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
 
 ### Workflow
@@ -44,13 +44,28 @@ Issues are solved by creating branches and opening pull requests. Only the assig
 
 ### Pylint and pytest
 
-We enforce [PEP 8 (Style Guide for Python Code)](https://www.python.org/dev/peps/pep-0008/) with [Pylint](http://pylint.pycqa.org/) syntax checking, and testing of the code via unit and integration tests with the [pytest](https://docs.pytest.org/) framwork. Both are implemented in the continuous integration system. Only if all tests pass successfully a pull request can be merged.
+We enforce [PEP 8 (Style Guide for Python Code)](https://www.python.org/dev/peps/pep-0008/) with [Pylint](http://pylint.pycqa.org/) syntax checking, and testing of the code via unit and integration tests with the [pytest](https://docs.pytest.org/) framework. Both are implemented in the continuous integration system. Only if all tests pass successfully a pull request can be merged.
 
 You can run them locally
 ```
 pylint */**.py
 pytest
 ```
+
+## How to cite
+If you intend to use this package in your own research please be sure to cite it. For BibTex we suggest:
+```
+@misc{pyspherex,
+    author = {Martin Staab},
+    title = {PySphereX},
+    howpublished = {\url{http://github.com/marstaa/PySphereX}},
+    year = {2021},
+    DOI={<insert DOI from Zenodo>}
+}
+```
+
+## Acknowledgements
+Many thanks to Ulrike Proske (prosku) for providing the example script.
 
 ## Contact
 
